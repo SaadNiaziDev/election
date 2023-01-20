@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import { useAccount, useContract, useSigner } from 'wagmi'
+import { useAccount, useContract } from 'wagmi'
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "./components/Contract";
 
 import AddCandidate from "./Components/AddCandidate";
 import Voting from "./Components/Voting";
-import { Web3Button } from "@web3modal/react";
 import Result from "./components/Result";
 import Swal from "sweetalert2";
 import Navbar from "./components/Navbar";
@@ -12,6 +11,7 @@ import { Route, Routes } from "react-router-dom";
 import Home from "./components/Home";
 import Countdown from "react-countdown";
 import Admin from "./components/Admin";
+import { ethers } from "ethers";
 
 function App() {
 
@@ -20,11 +20,10 @@ function App() {
 	const [time,setTime] = useState(0)
 
 	const { address } = useAccount()
-	const { data: signer } = useSigner()
 	const contract = useContract({
 		address: CONTRACT_ADDRESS,
 		abi: CONTRACT_ABI,
-		signerOrProvider: signer
+		signerOrProvider: new ethers.providers.JsonRpcProvider('https://api.avax-test.network/ext/bc/C/rpc')
 	})
 
 	const Toast = Swal.mixin({
@@ -147,7 +146,7 @@ function App() {
 		  return <Completionist />;
 		} else {
 		  // Render a countdown
-		  return <span className="text-4xl font-medium py-8">{hours}:{minutes}:{seconds}</span>;
+		  return <span className="text-4xl font-medium py-8">Voting will end in {hours}:{minutes}:{seconds}</span>;
 		}
 	  };
 
@@ -164,7 +163,7 @@ function App() {
 			<Navbar/>
 			<div className="w-full h-10 flex items-center">
 			<div className="justify-center content-center pt-6 mx-auto">
-			{time ==0 ?<span className="text-4xl font-medium py-8 text-grey-500">Voting will start soon by Adminstator</span> : <Countdown date={time*1000} renderer={renderer} />}
+			{time == 0 ?<span className="text-4xl font-medium py-8 text-grey-500">Voting will start soon by Adminstator</span> : <Countdown date={time*1000} renderer={renderer} />}
 			</div>
 			</div>
 			<Routes>
